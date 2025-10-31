@@ -127,16 +127,15 @@
             const keypad = document.getElementById('keypad');
 
             // --- ਸੁਰੱਖਿਆ ਜਾਂਚ ---
-            // ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਸਾਰੇ ਜ਼ਰੂਰੀ ਤੱਤ ਮੌਜੂਦ ਹਨ
             if (!inputB || !inputD || !inputE || !result1 || !part1_display || !part2_display || !result2 || !final_result_wrapper || !keypad) {
                 console.error("ਇੱਕ ਜਾਂ ਵੱਧ ਜ਼ਰੂਰੀ HTML ਤੱਤ (elements) ਨਹੀਂ ਮਿਲੇ। ਕਿਰਪਾ ਕਰਕੇ ID ਦੀ ਜਾਂਚ ਕਰੋ।");
-                return; // ਜੇ ਕੁਝ ਗੁੰਮ ਹੈ ਤਾਂ ਸਕ੍ਰਿਪਟ ਨੂੰ ਰੋਕੋ
+                return; 
             }
             // --- ਜਾਂਚ ਖਤਮ ---
 
             let currentFocusedInput = null; 
             let isOverwriteHead = false;
-            let hasEditedInputE = false; // ਟਰੈਕ ਕਰਨ ਲਈ ਕਿ ਕੀ inputE ਐਡਿਟ ਹੋਇਆ ਹੈ
+            let hasEditedInputE = false; 
 
             const valA = 151;
             const valC = 20;
@@ -156,7 +155,6 @@
                 part2_display.textContent = formatNumber(part2); 
                 result2.textContent = formatNumber(res2);
 
-                // ਆਖਰੀ ਨਤੀਜੇ ਨੂੰ ਸਿਰਫ਼ ਉਦੋਂ ਦਿਖਾਓ ਜੇਕਰ inputE ਐਡਿਟ ਹੋਇਆ ਹੈ
                 if (hasEditedInputE) {
                     final_result_wrapper.classList.remove('hidden');
                 } else {
@@ -169,9 +167,9 @@
                 inputD.value = '0'; 
                 inputE.value = '0'; 
                 
-                hasEditedInputE = false; // ਫਲੈਗ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ
+                hasEditedInputE = false; 
                 
-                calculate(); // ਮੁੜ ਗਣਨਾ ਕਰੋ (ਇਸ ਨਾਲ ਨਤੀਜਾ ਲੁਕ ਜਾਵੇਗਾ)
+                calculate(); 
                 
                 if(currentFocusedInput) {
                     currentFocusedInput.blur(); 
@@ -251,9 +249,9 @@
             inputD.value = '10';
             inputE.value = '500';
             
-            hasEditedInputE = true; // ਸ਼ੁਰੂ ਵਿੱਚ 'true' ਸੈੱਟ ਕਰੋ ਕਿਉਂਕਿ ਮੁੱਲ 500 ਹੈ
+            hasEditedInputE = true; 
             
-            calculate(); // ਪਹਿਲੀ ਵਾਰ ਕੈਲਕੂਲੇਟ ਕਰੋ
+            calculate(); 
         });
     </script>
 </body>
