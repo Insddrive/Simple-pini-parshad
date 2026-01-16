@@ -3,122 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AMOLED ਕੈਲਕੂਲੇਟਰ</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>AMOLED ਕੈਲਕੂਲੇਟਰ (ਆਫਲਾਈਨ)</title>
     <style>
-        /* ਇੰਟਰ ਫੌਂਟ ਅਤੇ ਬੇਸ ਸਟਾਈਲ */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
+        /* ਬੇਸ ਸਟਾਈਲ - ਆਫਲਾਈਨ ਲਈ ਸਿਸਟਮ ਫੌਂਟ ਸਟੈਕ */
         body {
-            font-family: 'Inter', sans-serif;
-            /* ਕੀ-ਬੋਰਡ ਨੂੰ ਪੂਰੀ ਤਰ੍ਹਾਂ ਬੰਦ ਕਰਨ ਲਈ ਟੱਚ ਐਕਸ਼ਨ ਨੂੰ ਰੋਕੋ */
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            background-color: #000000;
+            color: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 16px;
+            box-sizing: border-box;
             touch-action: manipulation;
-            /* ਯੂਜ਼ਰ ਵੱਲੋਂ ਟੈਕਸਟ ਸਲੈਕਟ ਕਰਨ ਨੂੰ ਰੋਕੋ (ਇਨਪੁਟ ਤੋਂ ਇਲਾਵਾ) */
             user-select: none;
         }
-        /* ਫੋਕਸ ਹੋਣ 'ਤੇ ਇਨਪੁਟ ਬਾਕਸ ਨੂੰ ਨੀਲਾ ਬਾਰਡਰ ਦਿਖਾਓ */
-        .calc-input:focus {
-            outline: none;
-            border-color: #3b82f6; /* blue-500 */
-            box-shadow: 0 0 0 1px #3b82f6; /* ਫੋਕਸ ਗਲੋ */
+
+        .container {
+            width: 100%;
+            max-width: 448px;
+            margin: 0 auto;
         }
-        /* readonly ਇਨਪੁਟ 'ਤੇ ਡਿਫਾਲਟ ਕਰਸਰ ਦਿਖਾਓ */
+
+        h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ਕਾਰਡ ਸਟਾਈਲ */
+        .card {
+            background-color: #111827;
+            border: 1px solid #1f2937;
+            padding: 1rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            margin-bottom: 1rem;
+        }
+
+        .overflow-x {
+            overflow-x: auto;
+        }
+
+        /* ਟੈਕਸਟ ਸਟਾਈਲ */
+        .text-right { text-align: right; }
+        .text-3xl { font-size: 1.875rem; }
+        .font-bold { font-weight: 700; }
+        .text-green { color: #10b981; }
+        .text-red { color: #ef4444; }
+        .text-gray-400 { color: #9ca3af; }
+        .text-white { color: #ffffff; }
+
+        .flex-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            white-space: nowrap;
+        }
+
+        /* ਇਨਪੁਟ ਬਾਕਸ */
+        .calc-input {
+            width: 4rem;
+            padding: 0.25rem 0.5rem;
+            text-align: center;
+            font-weight: 700;
+            color: #ffffff;
+            background-color: #1f2937;
+            border: 2px solid #374151;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .calc-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+
         .calc-input[readonly] {
             cursor: default;
         }
-        /* ਨੰਬਰ ਪੈਡ ਬਟਨਾਂ 'ਤੇ ਐਕਟਿਵ ਸਟੇਟ */
-        .keypad-btn:active {
-            transform: scale(0.95);
-            background-color: #4b5563; /* gray-600 */
+
+        /* ਨੰਬਰ ਪੈਡ */
+        .grid-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
         }
-        .keypad-btn-special:active {
-            transform: scale(0.95);
-            background-color: #6b7280; /* gray-500 */
+
+        .keypad-btn {
+            padding: 1rem 0;
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #ffffff;
+            background-color: #1f2937;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.15s;
         }
+
+        .keypad-btn:hover { background-color: #374151; }
+        .keypad-btn:active { transform: scale(0.95); background-color: #4b5563; }
+
+        .keypad-btn-special {
+            background-color: #374151;
+        }
+
+        .keypad-btn-special:hover { background-color: #4b5563; }
+        .keypad-btn-special:active { transform: scale(0.95); background-color: #6b7280; }
+
+        .col-span-3 { grid-column: span 3 / span 3; }
+        .hidden { display: none; }
+        
+        #inputE { width: 6rem; }
     </style>
 </head>
-<body class="bg-black flex items-center justify-center min-h-screen p-4">
+<body>
 
-    <div class="w-full max-w-md mx-auto">
-        
-        <h1 class="text-3xl font-bold text-center text-gray-100 mb-6">ਕਸਟਮ ਕੈਲਕੂਲੇਟਰ</h1>
+    <div class="container">
+        <h1>ਕਸਟਮ ਕੈਲਕੂਲੇਟਰ</h1>
 
-        <!-- ਪਹਿਲੀ ਕੈਲਕੂਲੇਸ਼ਨ (ਨਤੀਜਾ ਉੱਪਰ) -->
-        <div class="bg-gray-900 border border-gray-800 p-4 rounded-2xl shadow-xl mb-4 overflow-x-auto">
-            <!-- ਨਤੀਜਾ 1 (ਉੱਪਰ) -->
-            <div class="text-right text-3xl font-bold text-green-500 mb-2">
+        <!-- ਪਹਿਲੀ ਕੈਲਕੂਲੇਸ਼ਨ -->
+        <div class="card overflow-x">
+            <div class="text-right text-3xl font-bold text-green" style="margin-bottom: 0.5rem;">
                 = <span id="result1">351</span>
             </div>
-            <!-- ਕੈਲਕੂਲੇਸ਼ਨ 1 (ਇੱਕ ਲਾਈਨ) -->
-            <div class="flex items-center justify-center space-x-1 text-lg whitespace-nowrap">
+            <div class="flex-row" style="font-size: 1.125rem;">
                 <span class="text-gray-400">(</span>
                 <span class="font-bold text-white">151</span>
                 <span class="text-gray-400">x</span>
-                <!-- ਬਦਲਿਆ ਹੋਇਆ ਇਨਪੁਟ ਬਾਕਸ -->
-                <input type="text" inputmode="none" id="inputB" value="1" class="calc-input w-16 px-2 py-1 text-center font-bold text-white bg-gray-800 border-2 border-gray-700 rounded-md transition-all" readonly>
+                <input type="text" inputmode="none" id="inputB" value="1" class="calc-input" readonly>
                 <span class="text-gray-400">)</span>
                 <span class="text-gray-400">+</span>
                 <span class="text-gray-400">(</span>
                 <span class="font-bold text-white">20</span>
                 <span class="text-gray-400">x</span>
-                <!-- ਬਦਲਿਆ ਹੋਇਆ ਇਨਪੁਟ ਬਾਕਸ -->
-                <input type="text" inputmode="none" id="inputD" value="10" class="calc-input w-16 px-2 py-1 text-center font-bold text-white bg-gray-800 border-2 border-gray-700 rounded-md transition-all" readonly>
+                <input type="text" inputmode="none" id="inputD" value="10" class="calc-input" readonly>
                 <span class="text-gray-400">)</span>
             </div>
         </div>
 
-        <!-- ਦੂਜੀ ਕੈਲਕੂਲੇਸ਼ਨ (ਨਤੀਜਾ ਲੁਕਾਉਣ ਵਾਲੀ) -->
-        <div class="bg-gray-900 border border-gray-800 p-4 rounded-2xl shadow-xl mb-6">
-            <div class="flex items-center justify-center space-x-2 text-xl whitespace-nowrap">
-                <!-- ਨਤੀਜੇ ਦੇ ਹਿੱਸੇ -->
-                <span id="part1_display" class="font-bold text-green-500">151</span>
+        <!-- ਦੂਜੀ ਕੈਲਕੂਲੇਸ਼ਨ -->
+        <div class="card">
+            <div class="flex-row" style="font-size: 1.25rem; gap: 0.5rem;">
+                <span id="part1_display" class="font-bold text-green">151</span>
                 <span class="text-gray-400">+</span>
-                <span id="part2_display" class="font-bold text-green-500">200</span>
-                <!-- ਘਟਾਓ ਦਾ ਹਿੱਸਾ -->
+                <span id="part2_display" class="font-bold text-green">200</span>
                 <span class="text-gray-400">-</span>
-                <input type="text" inputmode="none" id="inputE" value="500" class="calc-input w-24 px-2 py-1 text-center font-bold text-white bg-gray-800 border-2 border-gray-700 rounded-md transition-all" readonly>
+                <input type="text" inputmode="none" id="inputE" value="500" class="calc-input" readonly>
                 
-                <!-- ਆਖਰੀ ਨਤੀਜੇ ਨੂੰ ਇੱਕ 'wrapper' ਵਿੱਚ ਪਾਓ -->
-                <span id="final_result_wrapper" class="hidden"> <!-- ਡਿਫਾਲਟ 'hidden' (ਲੁਕਿਆ) -->
+                <span id="final_result_wrapper" class="hidden">
                     <span class="text-gray-400">=</span>
-                    <span id="result2" class="font-bold text-red-500">-149</span>
+                    <span id="result2" class="font-bold text-red">-149</span>
                 </span>
             </div>
         </div>
 
-        <!-- ਨੰਬਰ ਪੈਡ (ਸਲੇਟੀ ਬਟਨਾਂ ਨਾਲ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ) -->
-        <div id="keypad" class="grid grid-cols-3 gap-3 bg-gray-900 border border-gray-800 p-4 rounded-2xl shadow-xl">
-            <!-- ਬਟਨ ਉਸੇ ਤਰ੍ਹਾਂ ਰਹਿਣਗੇ -->
-            <button class="keypad-btn py-4 text-3xl font-bold text-white bg-gray-800 hover:bg-gray-700 rounded-lg shadow-md transition-all duration-150">7</button>
-            <button class="keypad-btn py-4 text-3xl font-bold text-white bg-gray-800 hover:bg-gray-700 rounded-lg shadow-md transition-all duration-150">8</button>
-            <button class="keypad-btn py-4 text-3xl font-bold text-white bg-gray-800 hover:bg-gray-700 rounded-lg shadow-md transition-all duration-150">9</button>
+        <!-- ਨੰਬਰ ਪੈਡ -->
+        <div id="keypad" class="card grid-keypad">
+            <button class="keypad-btn">7</button>
+            <button class="keypad-btn">8</button>
+            <button class="keypad-btn">9</button>
             
-            <button class="keypad-btn py-4 text-3xl font-bold text-white bg-gray-800 hover:bg-gray-700 rounded-lg shadow-md transition-all duration-150">4</button>
-            <button class="keypad-btn py-4 text-3xl font-bold text-white bg-gray-800 hover:bg-gray-700 rounded-lg shadow-md transition-all duration-150">5</button>
-            <button class="keypad-btn py-4 text-3xl font-bold text-white bg-gray-800 hover:bg-gray-700 rounded-lg shadow-md transition-all duration-150">6</button>
+            <button class="keypad-btn">4</button>
+            <button class="keypad-btn">5</button>
+            <button class="keypad-btn">6</button>
             
-            <button class="keypad-btn py-4 text-3xl font-bold text-white bg-gray-800 hover:bg-gray-700 rounded-lg shadow-md transition-all duration-150">1</button>
-            <button class="keypad-btn py-4 text-3xl font-bold text-white bg-gray-800 hover:bg-gray-700 rounded-lg shadow-md transition-all duration-150">2</button>
-            <button class="keypad-btn py-4 text-3xl font-bold text-white bg-gray-800 hover:bg-gray-700 rounded-lg shadow-md transition-all duration-150">3</button>
+            <button class="keypad-btn">1</button>
+            <button class="keypad-btn">2</button>
+            <button class="keypad-btn">3</button>
             
-            <button class="keypad-btn py-4 text-3xl font-bold text-white bg-gray-800 hover:bg-gray-700 rounded-lg shadow-md transition-all duration-150">.</button>
-            <button class="keypad-btn py-4 text-3xl font-bold text-white bg-gray-800 hover:bg-gray-700 rounded-lg shadow-md transition-all duration-1A50">0</button>
-            <button id="backspace" class="keypad-btn-special py-4 text-3xl font-bold text-white bg-gray-700 hover:bg-gray-600 rounded-lg shadow-md transition-all duration-150">⌫</button>
+            <button class="keypad-btn">.</button>
+            <button class="keypad-btn">0</button>
+            <button id="backspace" class="keypad-btn keypad-btn-special">⌫</button>
             
-            <button id="clear" class="keypad-btn-special col-span-3 py-4 text-3xl font-bold text-white bg-gray-700 hover:bg-gray-600 rounded-lg shadow-md transition-all duration-150">C</button>
+            <button id="clear" class="keypad-btn keypad-btn-special col-span-3">C</button>
         </div>
-
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // ਇਨਪੁਟ ਫੀਲਡ
             const inputB = document.getElementById('inputB');
             const inputD = document.getElementById('inputD');
             const inputE = document.getElementById('inputE');
             const editableInputs = [inputB, inputD, inputE];
 
-            // ਨਤੀਜਾ ਫੀਲਡ
             const result1 = document.getElementById('result1');
             const part1_display = document.getElementById('part1_display'); 
             const part2_display = document.getElementById('part2_display'); 
@@ -126,12 +201,9 @@
             const final_result_wrapper = document.getElementById('final_result_wrapper'); 
             const keypad = document.getElementById('keypad');
 
-            // --- ਸੁਰੱਖਿਆ ਜਾਂਚ ---
             if (!inputB || !inputD || !inputE || !result1 || !part1_display || !part2_display || !result2 || !final_result_wrapper || !keypad) {
-                console.error("ਇੱਕ ਜਾਂ ਵੱਧ ਜ਼ਰੂਰੀ HTML ਤੱਤ (elements) ਨਹੀਂ ਮਿਲੇ। ਕਿਰਪਾ ਕਰਕੇ ID ਦੀ ਜਾਂਚ ਕਰੋ।");
                 return; 
             }
-            // --- ਜਾਂਚ ਖਤਮ ---
 
             let currentFocusedInput = null; 
             let isOverwriteHead = false;
@@ -166,22 +238,15 @@
                 inputB.value = '0'; 
                 inputD.value = '0'; 
                 inputE.value = '0'; 
-                
                 hasEditedInputE = false; 
-                
                 calculate(); 
-                
-                if(currentFocusedInput) {
-                    currentFocusedInput.blur(); 
-                }
+                if(currentFocusedInput) currentFocusedInput.blur(); 
                 currentFocusedInput = null; 
                 isOverwriteHead = false; 
             }
 
             function formatNumber(num) {
-                if (Number.isInteger(num)) {
-                    return num.toString();
-                }
+                if (Number.isInteger(num)) return num.toString();
                 return (Math.round(num * 100) / 100).toString();
             }
 
@@ -191,10 +256,7 @@
                     input.select(); 
                     isOverwriteHead = true; 
                 });
-
-                input.addEventListener('contextmenu', (e) => {
-                    e.preventDefault(); 
-                });
+                input.addEventListener('contextmenu', (e) => e.preventDefault());
             });
 
             keypad.addEventListener('click', (e) => {
@@ -240,21 +302,17 @@
                         }
                     }
                 }
-                
                 calculate(); 
             });
 
-            // ਸ਼ੁਰੂਆਤੀ ਲੋਡ
+            // ਸ਼ੁਰੂਆਤੀ ਸੈਟਿੰਗ
             inputB.value = '1';
             inputD.value = '10';
             inputE.value = '500';
-            
             hasEditedInputE = true; 
-            
             calculate(); 
         });
     </script>
 </body>
 </html>
-
 
